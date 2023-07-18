@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import datetime, timedelta
+from typing import Any
 
 class Field:
     def __init__(self, value) -> None:
@@ -10,6 +11,12 @@ class Field:
     
     def __repr__(self) -> str:
         return str(self)
+    
+    # def __setattr__(self, __name: str, __value: Any) -> None:
+    #     pass
+
+    # def __getattribute__(self, __name: str) -> Any:
+    #     pass
         
 
 class Name(Field):
@@ -50,6 +57,12 @@ class Record:
                 self.phones.remove(phone)
                 return f'\nPhone number {phone.value} for {self.name} removed successfully!'
         return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
+    
+    def add_birthday(self, birthday: Birthday):
+        if birthday.value == self.birthday:
+            self.birthday.append(birthday)
+            return f"\nPhone number {phone} to contact {self.name} is added successfully!"
+        return f"\nThe phone number {phone} for {self.name} is already in adress book!"
     
     def days_to_birthday(self):
         if self.birthday:

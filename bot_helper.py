@@ -1,7 +1,7 @@
 """У цьому домашньому завданні ми:
 
 Додамо поле для дня народження Birthday. Це поле не обов'язкове, але може бути тільки одне. DONE
-Додамо функціонал роботи з Birthday у клас Record, а саме функцію days_to_birthday, яка повертає кількість днів до наступного дня народження.
+Додамо функціонал роботи з Birthday у клас Record, а саме функцію days_to_birthday, яка повертає кількість днів до наступного дня народження.DONE
 Додамо функціонал перевірки на правильність наведених значень для полів Phone, Birthday.
 Додамо пагінацію (посторінкове виведення) для AddressBook для ситуацій, коли книга дуже велика і потрібно показати вміст частинами, а не все одразу. Реалізуємо це через створення ітератора за записами.
 Критерії приймання:
@@ -16,7 +16,7 @@ setter та getter логіку для атрибутів value спадкоєм
 import re
 from rich import print
 from rich.table import Table
-from classes import AddressBook, Name, Phone, Record
+from classes import AddressBook, Name, Phone, Record, Birthday
 
 address_book = AddressBook()
 
@@ -54,11 +54,12 @@ def add_command(*args):
 
     name = Name(args[0])
     phone = Phone(args[1])
+    birthday = Birthday([3])
     rec: Record = address_book.get(str(name))
 
     if rec:
         return rec.add_phone(phone)
-    rec = Record(name, phone)
+    rec = Record(name, phone, birthday)
     return address_book.add_record(rec)
 
 
@@ -185,7 +186,7 @@ def parser(text:str):
 
 def main():
 
-    print (table_of_commands())
+    #print (table_of_commands())
 
     while True:
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
@@ -208,6 +209,7 @@ if __name__ == "__main__":
 # show all
 # help
 # phone
+# ADD Bill
 # ADD Bill +380(67)333-43-54
 # Append Bill +380(67)333-11-11
 # phone Bill
