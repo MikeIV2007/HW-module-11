@@ -114,6 +114,10 @@ def help_command(*args):
 def hello_command(*args):
     return '\nHow can I help you?'
 
+def days_to_birthday_command(*args):
+    ...
+    
+
 
 COMMANDS = {
     add_command: ('add', 'append'),

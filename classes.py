@@ -1,5 +1,5 @@
 from collections import UserDict
-
+from datetime import datetime, timedelta
 
 class Field:
     def __init__(self, value) -> None:
@@ -52,6 +52,34 @@ class Record:
         return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
     
     def days_to_birthday(self):
+        if self.birthday:
+            date_now = datetime.now().date()
+            print ('date now',str(date_now))
+            format_str = "%Y-%m-%d"
+            birthday_datetime = datetime.strptime(str(self.birthday.value), format_str).date()
+            print ('birthday_datetime',birthday_datetime)
+            print (date_now.year)
+            print (birthday_datetime.month)
+            print (birthday_datetime.day)
+            birthday_this_year = datetime(date_now.year, birthday_datetime.month, birthday_datetime.day).date()
+            print (f'birthday_this_year {birthday_this_year}')
+            delta = (birthday_this_year - date_now).days
+            print (f'delta {delta}')
+            if delta > 0:
+                return f'\n{delta} days until the next birthday of {self.name}'
+            elif delta == 0:
+                return f'\n{self.name} birthday is today!'
+            else:
+                birthday_next_year = datetime(date_now.year + 1, birthday_datetime.month, birthday_datetime.day).date()
+                delta = (birthday_next_year - date_now).days
+                return f'\n{delta} days until the next birthday of {self.name}'
+        
+
+        else:
+            return f'\nBirthday for {self.name} is unknown!'
+
+        
+
         ...
         
     def __str__(self) -> str:
@@ -73,8 +101,13 @@ if __name__ == '__main__':
     print (name_1)
     phone_1 = Phone('+380(67)333-43-54')
     print (phone_1)
-    record_1 = Record(name_1, phone_1)
+    #birthday = Birthday('2000-12-15')
+   #birthday = Birthday('2000-07-18')
+    birthday = Birthday('2000-07-17')
+    print (birthday)
+    record_1 = Record(name_1, phone_1, birthday)
     print (record_1)
     address_book = AddressBook()
     address_book.add_record(record_1)
     print (address_book)
+    print (record_1.days_to_birthday())
