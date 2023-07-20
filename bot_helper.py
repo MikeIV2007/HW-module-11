@@ -1,7 +1,10 @@
 """У цьому домашньому завданні ми:
 
 Додамо поле для дня народження Birthday. Це поле не обов'язкове, але може бути тільки одне. DONE
-Додамо функціонал роботи з Birthday у клас Record, а саме функцію days_to_birthday, яка повертає кількість днів до наступного дня народження.DONE
+Додамо функціонал роботи з Birthday у клас Record, а саме функцію days_to_birthday, яка повертає кількість днів до наступного дня народження.
+
+add birthday
+
 Додамо функціонал перевірки на правильність наведених значень для полів Phone, Birthday.
 Додамо пагінацію (посторінкове виведення) для AddressBook для ситуацій, коли книга дуже велика і потрібно показати вміст частинами, а не все одразу. Реалізуємо це через створення ітератора за записами.
 Критерії приймання:
@@ -16,24 +19,30 @@ setter та getter логіку для атрибутів value спадкоєм
 import re
 from rich import print
 from rich.table import Table
-from classes import AddressBook, Name, Phone, Record, Birthday
+from classes import AddressBook, Name, Phone, Record
+
+I = 1
 
 address_book = AddressBook()
+
 
 def table_of_commands():
     table = Table(title='\nALL VALID COMMANDS:\n(All entered data must be devided by gap!)')
     table.add_column('COMMAND', justify='left')
     table.add_column('NAME', justify='left')
     table.add_column('PHONE NUMBER', justify='center')
+    table.add_column('BIRTHDAY', justify='center')
     table.add_column('DESCRIPTION', justify='left')
-    table.add_row('hello', '-', '-', 'Greeting')
-    table.add_row('add', 'Any name ', 'Phone number in any format', 'Add new contact')
-    table.add_row('append', 'Existing name', 'Additional phone number', 'Append phone number') 
-    table.add_row('delete', 'Existing name', 'Phone to delete', 'Delete phone number')
-    table.add_row('phone', 'Existing name', '-', 'Getting phone number')
-    table.add_row('show all', '-', '-', 'Getting all database')
-    table.add_row('good bye / close / exit', '-', '-', 'Exit')
-    table.add_row('help', '-', '-', 'Printing table of commands')
+    table.add_row('hello', '-', '-', '-', 'Greeting')
+    table.add_row('add', 'Any name ', 'Phone number in any format', '-', 'Add new contact')
+    table.add_row('append', 'Existing name', 'Additional phone number', '-', 'Append phone number') 
+    table.add_row('delete', 'Existing name', 'Phone to delete', '-', 'Delete phone number')
+    table.add_row('birthday', 'Existing name', '-', 'Birthday', 'Add birthday')
+    table.add_row('days to birthday', 'Existing name', '-', '-', 'Sow days to birthday')
+    table.add_row('phone', 'Existing name', '-', '-', 'Getting phone number')
+    table.add_row('show all', '-', '-', '-', 'Getting all database')
+    table.add_row('good bye / close / exit', '-', '-', '-', 'Exit')
+    table.add_row('help', '-', '-', '-','Printing table of commands')
 
     return table
 
@@ -54,12 +63,11 @@ def add_command(*args):
 
     name = Name(args[0])
     phone = Phone(args[1])
-    birthday = Birthday([3])
     rec: Record = address_book.get(str(name))
 
     if rec:
         return rec.add_phone(phone)
-    rec = Record(name, phone, birthday)
+    rec = Record(name, phone)
     return address_book.add_record(rec)
 
 
@@ -100,11 +108,19 @@ def show_all_command(*args):
     for name, record in address_book.data.items():
         phones_str = ''
         user_name = record.name
-        user_phones_list = record.phones
-        for item in user_phones_list:
-            phones_str += item.value + ', '
+        user_phones= record.phones
+        print ('112',user_phones)
+        print ('113',len(user_phones))
+        user_phones_list = []
+        #print (user_phones_list)
+        for phone in user_phones:
+            user_phones_list.append(phone.value)
+        phones_str = ' ,'.join(user_phones_list)
+        print ('119',phones_str)
+        # for item in user_phones_list:
+        #     phones_str += item.value + ', '
 
-        table.add_row(user_name.value, phones_str.strip())
+        table.add_row(user_name.value, phones_str)
     return table
 
 
@@ -114,6 +130,9 @@ def help_command(*args):
 
 def hello_command(*args):
     return '\nHow can I help you?'
+
+def birtday_command(*args):
+    ...
 
 def days_to_birthday_command(*args):
     ...
@@ -127,7 +146,9 @@ COMMANDS = {
     exit_command: ('good bye', 'close', 'exit'),
     show_all_command: ('show all',),
     help_command: ('help',),
-    hello_command: ('hello',)
+    hello_command: ('hello',),
+    birtday_command: ('birthday',),
+    days_to_birthday_command: ('days to birsday',)
 }
 
 def check_phone_number(command, phone):
@@ -142,8 +163,9 @@ def check_phone_number(command, phone):
       
         return phone
     else:
-        return (f'Phone number {phone} is not valid! It must be in range from 10 to 18 characters! Try againe!')
-
+        print  (f'\nPhone number {phone} is not valid! It must be in range from 10 to 18 characters! Try againe!')
+        phone = ''
+        return phone
 
 
 def get_user_name(user_info: str )-> tuple:
@@ -185,19 +207,34 @@ def parser(text:str):
 
 
 def main():
-
-    #print (table_of_commands())
+    # global I
+    # if I == 1:
+    #     print (table_of_commands())
+    #     I += 1
 
     while True:
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
         
         command, user_info = parser(user_input)
-        if user_info or command:
+
+        if len(user_info) > 0:
             name, phone = get_user_name(user_info)
-            phone = check_phone_number(command, phone)
+            if len (phone) > 0:
+                phone = check_phone_number(command, phone)
+                
+            else:
+                phone = None
             data = (name, phone)
-            result = command(*data)
-            print(result)
+        else:
+            name = ''
+            phone = ''
+            data = (name, phone)
+            # name = ''
+            # phone = ''
+
+        # data = (name, phone)
+        result = command(*data)
+        print(result)
         
         if command == exit_command:
             break
@@ -209,7 +246,7 @@ if __name__ == "__main__":
 # show all
 # help
 # phone
-# ADD Bill
+# add Bill
 # ADD Bill +380(67)333-43-54
 # Append Bill +380(67)333-11-11
 # phone Bill

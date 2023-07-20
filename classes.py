@@ -34,7 +34,7 @@ class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday = None) -> None:
         self.name = name
         self.phones = []
-        if phone:
+        if phone.value:
             self.phones.append(phone)
         self.birthday = birthday
     
@@ -59,10 +59,10 @@ class Record:
         return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
     
     def add_birthday(self, birthday: Birthday):
-        if birthday.value == self.birthday:
-            self.birthday.append(birthday)
-            return f"\nPhone number {phone} to contact {self.name} is added successfully!"
-        return f"\nThe phone number {phone} for {self.name} is already in adress book!"
+        if not self.birthday:
+            self.birthday = birthday
+            return f"\nBirthday {self.birthday} to contact {self.name} is added successfully!"
+        return f"\nThe {birthday} for {self.name} is already in adress book!"
     
     def days_to_birthday(self):
         if self.birthday:
@@ -90,10 +90,6 @@ class Record:
 
         else:
             return f'\nBirthday for {self.name} is unknown!'
-
-        
-
-        ...
         
     def __str__(self) -> str:
         return f"{self.name} {', '.join(str(p) for p in self.phones)}"
