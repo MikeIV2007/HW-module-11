@@ -19,7 +19,7 @@ setter та getter логіку для атрибутів value спадкоєм
 import re
 from rich import print
 from rich.table import Table
-from classes import AddressBook, Name, Phone, Record
+from classes import AddressBook, Name, Phone, Record, Birthday
 
 I = 1
 
@@ -138,8 +138,19 @@ def help_command(*args):
 def hello_command(*args):
     return '\nHow can I help you?'
 
-def birtday_command(*args):
-    ...
+def birthday_command(*args):
+    print ("142", args)
+    name = Name(args[0])
+    birthday = Birthday(args[1])
+    print ('145', birthday)
+    rec: Record = address_book.get(str(name))
+    print ('147', rec)
+    if rec:
+        return rec.add_birthday(birthday)
+    rec = Record(name, birthday = birthday)
+    print ('151', rec)
+    return address_book.add_record(rec)
+
 
 def days_to_birthday_command(*args):
     ...
@@ -154,7 +165,7 @@ COMMANDS = {
     show_all_command: ('show all',),
     help_command: ('help',),
     hello_command: ('hello',),
-    birtday_command: ('birthday',),
+    birthday_command: ('birthday',),
     days_to_birthday_command: ('days to birsday',)
 }
 
@@ -187,7 +198,7 @@ def get_user_name(user_info: str )-> tuple:
             if len(match_name.group()) == len(i):
                 name_list.append(i.capitalize())
                 user_info = user_info[match_name.span()[1]:].strip()
-                phone = user_info
+                user_data = user_info
             else:
                 return '\nName is not correct! Try again!'
 
@@ -196,9 +207,9 @@ def get_user_name(user_info: str )-> tuple:
         name = ' '.join(name_list)
     else:
         name = ''
-        phone = ''
+        user_data = ''
 
-    return name, phone
+    return name, user_data
 
 def parser(text:str):
     for command, kwds in COMMANDS.items():
@@ -220,26 +231,38 @@ def main():
     #     I += 1
 
     while True:
+
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
         
         command, user_info = parser(user_input)
-
+        print ("233", COMMANDS[command])
+        if command == None:
+            continue
         if len(user_info) > 0:
-            name, phone = get_user_name(user_info)
-            if len (phone) > 0:
-                phone = check_phone_number(command, phone)
-                
+
+            if COMMANDS[command][0] == 'birthday':
+                name, birthday = get_user_name(user_info)
+                if len(birthday)>0:
+                    #name, birthday = birthday_command(user_info)
+                    data = (name, birthday)
+                else:
+                    birthday = None
+                    data = (name, birthday)
+
             else:
-                phone = None
-            data = (name, phone)
+                name, phone = get_user_name(user_info)
+                if len (phone) > 0:
+                    #phone = check_phone_number(command, phone)
+                    phone = phone
+                    data = (name, phone)
+                else:
+                    phone = ''
+                    data = (name, phone)
         else:
             name = ''
             phone = ''
             data = (name, phone)
-            # name = ''
-            # phone = ''
 
-        # data = (name, phone)
         result = command(*data)
         print(result)
         

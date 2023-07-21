@@ -25,16 +25,30 @@ class Name(Field):
 
 class Phone(Field):
     ...
+    # def __init__(self, value, rooms=255):
+    #     self.__name = None
+    #     self.name = value
+    
+    # @property
+    # def name(self):
+    #     return self.__name.upper()
+    
+    # @name.setter
+    # def name(self, value):
+    #     if not isinstance(value, str):
+    #         raise WrongHotelName("Name must be string")
+    #     self.__name = value
 
 class Birthday(Field):
     ...
 
 
 class Record:
-    def __init__(self, name: Name, phone: Phone = None, birthday = None) -> None:
+    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
         self.phones = []
-        if phone.value:
+        #if phone.value:
+        if phone != None:
             self.phones.append(phone)
         self.birthday = birthday
     
@@ -59,7 +73,8 @@ class Record:
         return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
     
     def add_birthday(self, birthday: Birthday):
-        if not self.birthday:
+        print ('75', self.birthday)
+        if self.birthday == None:
             self.birthday = birthday
             return f"\nBirthday {self.birthday} to contact {self.name} is added successfully!"
         return f"\nThe {birthday} for {self.name} is already in adress book!"
@@ -67,17 +82,17 @@ class Record:
     def days_to_birthday(self):
         if self.birthday:
             date_now = datetime.now().date()
-            print ('date now',str(date_now))
+            #print ('date now',str(date_now))
             format_str = "%Y-%m-%d"
             birthday_datetime = datetime.strptime(str(self.birthday.value), format_str).date()
-            print ('birthday_datetime',birthday_datetime)
-            print (date_now.year)
-            print (birthday_datetime.month)
-            print (birthday_datetime.day)
+            #print ('birthday_datetime',birthday_datetime)
+            #print (date_now.year)
+            #print (birthday_datetime.month)
+            #print (birthday_datetime.day)
             birthday_this_year = datetime(date_now.year, birthday_datetime.month, birthday_datetime.day).date()
-            print (f'birthday_this_year {birthday_this_year}')
+            #print (f'birthday_this_year {birthday_this_year}')
             delta = (birthday_this_year - date_now).days
-            print (f'delta {delta}')
+            #print (f'delta {delta}')
             if delta > 0:
                 return f'\n{delta} days until the next birthday of {self.name}'
             elif delta == 0:
@@ -92,7 +107,10 @@ class Record:
             return f'\nBirthday for {self.name} is unknown!'
         
     def __str__(self) -> str:
-        return f"{self.name} {', '.join(str(p) for p in self.phones)}"
+        print ('110', len(self.phones))
+        if len(self.phones) <= 1:
+            return f"{self.name}; Unknown; {self.birthday}"
+        return f"{self.name}; {', '.join(str(p) for p in self.phones)}; {self.birthday}"
 
 
 class AddressBook(UserDict):
@@ -105,18 +123,20 @@ class AddressBook(UserDict):
     
 if __name__ == '__main__':
 
-    # Bill +380(67)333-43-54
-    name_1 = Name('Bill')
-    print (name_1)
-    phone_1 = Phone('+380(67)333-43-54')
-    print (phone_1)
-    #birthday = Birthday('2000-12-15')
-   #birthday = Birthday('2000-07-18')
-    birthday = Birthday('2000-07-17')
-    print (birthday)
-    record_1 = Record(name_1, phone_1, birthday)
-    print (record_1)
-    address_book = AddressBook()
-    address_book.add_record(record_1)
-    print (address_book)
-    print (record_1.days_to_birthday())
+    """    # Bill +380(67)333-43-54
+    #     name_1 = Name('Bill')
+    #     print ('123', name_1)
+    #     phone_1 = Phone('+380(67)333-43-54')
+        #phone_1 = Phone(None)
+        #print ('125', phone_1)
+    #     #birthday = Birthday('2000-12-15')
+    #    #birthday = Birthday('2000-07-18')
+    #     birthday = Birthday('2000-07-17')
+    #     print ('129', birthday)
+    #     record_1 = Record(name_1, phone_1, birthday)
+    #     print ('131', record_1)
+    #     print ('132', record_1.birthday.value)
+    #     address_book = AddressBook()
+    #     address_book.add_record(record_1)
+    #     print ('134', address_book)
+    #     print ('135', record_1.days_to_birthday())"""
