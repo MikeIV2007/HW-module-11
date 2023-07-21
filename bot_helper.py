@@ -101,13 +101,20 @@ def show_all_command(*args):
     table = Table(title='\nALL CONTACTS IN DATABASE')
     table.add_column('Name', justify='left')
     table.add_column("Phone number", justify="left")
+    table.add_column("Birthday", justify="left")
+    #table.add_column("", justify="left")
 
     if len(address_book.data) == 0:
         return '\nAddress Book is empty!'
     
     for name, record in address_book.data.items():
         phones_str = ''
-        user_name = record.name
+        user_name = record.name.value
+        if record.birthday:
+            user_birthday = record.birthday.value
+        else:
+            user_birthday = 'Unknown'
+
         user_phones= record.phones
         print ('112',user_phones)
         print ('113',len(user_phones))
@@ -120,7 +127,7 @@ def show_all_command(*args):
         # for item in user_phones_list:
         #     phones_str += item.value + ', '
 
-        table.add_row(user_name.value, phones_str)
+        table.add_row(user_name, phones_str, user_birthday )
     return table
 
 
@@ -250,6 +257,7 @@ if __name__ == "__main__":
 # ADD Bill +380(67)333-43-54
 # Append Bill +380(67)333-11-11
 # phone Bill
+# BirthDaY Bill 2002-05-32
 # DeLete Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # Append Bill Jonson +380(67)333-99-88
