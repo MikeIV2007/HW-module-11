@@ -60,6 +60,8 @@ def input_error(func):
 
 @input_error
 def add_command(*args):
+    if args[0] == '':
+        return '\nMissing mame of contact!'
 
     name = Name(args[0])
     phone = Phone(args[1])
@@ -72,7 +74,9 @@ def add_command(*args):
 
 
 def delete_phone_command(*args):
-
+    if args[0] == '':
+        return '\nMissing mame of contact!'
+    
     name = Name(args[0])
     phone_to_delete = Phone (args[1])
     record: Record = address_book.get(str(name))
@@ -83,13 +87,14 @@ def delete_phone_command(*args):
 
 
 def phone_command(*args):
+    if args[0] == '':
+        return '\nMissing name of contact!'
 
     for name, record in address_book.data.items():
         if name == args[0]:
             phones = ", ".join(str(phone) for phone in record.phones)
             return (f'\nPhone number(s) of {name} is: {phones}')
-        
-    return f'\nContact {name} in address book is not found!'
+    return f'\nContact {args[0]} not found in address book!'
 
 
 def exit_command(*args):
@@ -139,16 +144,18 @@ def hello_command(*args):
     return '\nHow can I help you?'
 
 def birthday_command(*args):
-    print ("142", args)
+    if args[0] == '':
+        return '\nMissing mame of contact!'
+    print ("145", args)
     name = Name(args[0])
     birthday = Birthday(args[1])
-    print ('145', birthday)
+    print ('148', birthday)
     rec: Record = address_book.get(str(name))
-    print ('147', rec)
+    print ('150', rec)
     if rec:
         return rec.add_birthday(birthday)
     rec = Record(name, birthday = birthday)
-    print ('151', rec)
+    print ('155', rec)
     return address_book.add_record(rec)
 
 
@@ -235,7 +242,7 @@ def main():
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
         
         command, user_info = parser(user_input)
-        print ("233", COMMANDS[command])
+        #print ("233", COMMANDS[command])
         if command == None:
             continue
         if len(user_info) > 0:
@@ -279,7 +286,7 @@ if __name__ == "__main__":
 # add Bill
 # ADD Bill +380(67)333-43-54
 # Append Bill +380(67)333-11-11
-# phone Bill
+# add
 # BirthDaY Bill 2002-05-32
 # DeLete Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
