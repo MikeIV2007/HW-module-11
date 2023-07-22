@@ -64,6 +64,9 @@ def add_command(*args):
         return '\nMissing mame of contact!'
 
     name = Name(args[0])
+    if args[1] == "":
+        return f'\nPhone number is missing!'
+    
     phone = Phone(args[1])
     rec: Record = address_book.get(str(name))
 
@@ -83,7 +86,7 @@ def delete_phone_command(*args):
 
     if record:
         return record.delete_pone(phone_to_delete)
-    return f'\nContact {name} in address book is not found!'
+    return f'\nContact {name} not found in address book!'
 
 
 def phone_command(*args):
@@ -92,6 +95,8 @@ def phone_command(*args):
 
     for name, record in address_book.data.items():
         if name == args[0]:
+            if record.phones == []:
+                return (f'\nContact {name} doesn\'t have any phone!')
             phones = ", ".join(str(phone) for phone in record.phones)
             return (f'\nPhone number(s) of {name} is: {phones}')
     return f'\nContact {args[0]} not found in address book!'
@@ -122,12 +127,10 @@ def show_all_command(*args):
         phones_str = 'Unknown'
         user_phones_list = []
         user_phones= record.phones
-        #print ('124', record.phones)
         if record.phones != None:
             for phone in user_phones:
                 user_phones_list.append(phone.value)
-            phones_str = ' ,'.join(user_phones_list) 
-        #print ("130", user_name, phones_str, user_birthday)   
+            phones_str = ' ,'.join(user_phones_list)   
         table.add_row(str(user_name), str(phones_str), str(user_birthday) )
     return table
 
@@ -145,7 +148,7 @@ def birthday_command(*args):
 
     name = Name(args[0])
     birthday = Birthday(args[1])
-    #birthday = Birthday(birthday.date)
+
     if birthday.value == None:
         return f'\nBirthday {args[1]} is not correct!'
     rec: Record = address_book.get(str(name))

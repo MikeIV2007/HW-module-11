@@ -66,6 +66,7 @@ class Birthday(Field):
             # return self.__date
         
 class Record:
+    
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
         if phone == None:
@@ -77,48 +78,38 @@ class Record:
             #     self.phones.append(phone)
             self.phones.append(phone)
         self.birthday = birthday
+
     
     def add_phone(self, phone: Phone):
-        if phone.value not in [p.value for p in self.phones]:
+        if self.phones == None:
+            self.phones = []
+            self.phones.append(phone)
+        if self.phones == None or phone.value not in [p.value for p in self.phones]:
             self.phones.append(phone)
             return f"\nPhone number {phone} to contact {self.name} is added successfully!"
         return f"\nThe phone number {phone} for {self.name} is already in adress book!"
     
-    # def change_phone(self, old_phone, new_phone):
-    #     for idx, p in enumerate(self.phones):
-    #         if old_phone.value == p.value:
-    #             self.phones[idx] = new_phone
-    #             return f"old phone {old_phone} change to {new_phone}"
-    #     return f"{old_phone} not present in phones of contact {self.name}"
 
     def delete_pone(self, phone_to_delete):
         for phone in self.phones:
             if phone.value == phone_to_delete.value:
                 self.phones.remove(phone)
                 return f'\nPhone number {phone.value} for {self.name} removed successfully!'
-        return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
+        return f"\nPhone {phone_to_delete} not in the phones list of the contact {self.name}"
     
     def add_birthday(self, birthday: Birthday):
 
         if self.birthday == None:
             self.birthday = birthday
-            return f"\nBirthday {self.birthday} to contact {self.name} is added successfully!"
+            return f"\nBirthday {self.birthday.value} to contact {self.name} is added successfully!"
         return f"\nThe {birthday} for {self.name} is already in adress book!"
     
     def days_to_birthday(self):
 
         date_now = datetime.now().date()
-
-        # format_str = "%Y-%m-%d"
-        # birthday_datetime = datetime.strptime(str(self.birthday), format_str).date()
-        # print ('birthday_datetime',birthday_datetime)
-        # print (date_now.year)
-        # print (birthday_datetime.month)
-        # print (birthday_datetime.day)
         birthday_this_year = datetime(date_now.year, self.birthday.value.month, self.birthday.value.day).date()
-        print (f'birthday_this_year {birthday_this_year}')
         delta = (birthday_this_year - date_now).days
-        print (f'delta {delta}')
+
         if delta > 0:
             return f'\n{delta} days until the next birthday of {self.name}'
         elif delta == 0:
@@ -129,10 +120,14 @@ class Record:
             return f'\n{delta} days until the next birthday of {self.name}'
         
     def __str__(self) -> str:
-        
+                
+        if self.phones == None and self.birthday == None:
+            return f"{self.name}; Unknown; Uncknown"
         if self.phones == None:
             return f"{self.name}; Unknown; {self.birthday.value}"
-        return f"{self.name}; {', '.join(str(p) for p in self.phones)}; {self.birthday.value}"
+        if self.birthday == None:
+            return f"{self.name}; {', '.join(str(p) for p in self.phones)}; Unknown"
+        return f"{self.name}; {', '.join(str(p) for p in self.phones)}; {str(self.birthday.value)}"
 
 
 class AddressBook(UserDict):
