@@ -40,9 +40,31 @@ class Phone(Field):
     #     self.__name = value
 
 class Birthday(Field):
-    ...
-
-
+    def __init__(self, value) -> None:
+        super().__init__(value)
+        self.__value= None
+        self.value = value
+   
+    @property
+    def value(self):
+        return self.__value
+    
+    @value.setter
+    def value(self, value):
+        format_str = "%Y-%m-%d"
+        try:
+            birthday_datetime = datetime.strptime(str(value), format_str).date()
+            self.__value = birthday_datetime
+            return self.__value
+            
+        except:
+            
+            self.__value= None
+            return self.__value
+            #return f'\nBirthday format {value} not correct!'
+            # self.__date = None
+            # return self.__date
+        
 class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
@@ -51,8 +73,9 @@ class Record:
         else:
             self.phones = []
             #if phone.value:
-            if phone != None:
-                self.phones.append(phone)
+            # if phone != None:
+            #     self.phones.append(phone)
+            self.phones.append(phone)
         self.birthday = birthday
     
     def add_phone(self, phone: Phone):
@@ -76,44 +99,40 @@ class Record:
         return f"{phone_to_delete} is not in the phones list of the contact {self.name}"
     
     def add_birthday(self, birthday: Birthday):
-        print ('75', self.birthday)
+
         if self.birthday == None:
             self.birthday = birthday
             return f"\nBirthday {self.birthday} to contact {self.name} is added successfully!"
         return f"\nThe {birthday} for {self.name} is already in adress book!"
     
     def days_to_birthday(self):
-        if self.birthday:
-            date_now = datetime.now().date()
-            #print ('date now',str(date_now))
-            format_str = "%Y-%m-%d"
-            birthday_datetime = datetime.strptime(str(self.birthday.value), format_str).date()
-            #print ('birthday_datetime',birthday_datetime)
-            #print (date_now.year)
-            #print (birthday_datetime.month)
-            #print (birthday_datetime.day)
-            birthday_this_year = datetime(date_now.year, birthday_datetime.month, birthday_datetime.day).date()
-            #print (f'birthday_this_year {birthday_this_year}')
-            delta = (birthday_this_year - date_now).days
-            #print (f'delta {delta}')
-            if delta > 0:
-                return f'\n{delta} days until the next birthday of {self.name}'
-            elif delta == 0:
-                return f'\n{self.name} birthday is today!'
-            else:
-                birthday_next_year = datetime(date_now.year + 1, birthday_datetime.month, birthday_datetime.day).date()
-                delta = (birthday_next_year - date_now).days
-                return f'\n{delta} days until the next birthday of {self.name}'
-        
 
+        date_now = datetime.now().date()
+
+        # format_str = "%Y-%m-%d"
+        # birthday_datetime = datetime.strptime(str(self.birthday), format_str).date()
+        # print ('birthday_datetime',birthday_datetime)
+        # print (date_now.year)
+        # print (birthday_datetime.month)
+        # print (birthday_datetime.day)
+        birthday_this_year = datetime(date_now.year, self.birthday.value.month, self.birthday.value.day).date()
+        print (f'birthday_this_year {birthday_this_year}')
+        delta = (birthday_this_year - date_now).days
+        print (f'delta {delta}')
+        if delta > 0:
+            return f'\n{delta} days until the next birthday of {self.name}'
+        elif delta == 0:
+            return f'\n{self.name} birthday is today!'
         else:
-            return f'\nBirthday for {self.name} is unknown!'
+            birthday_next_year = datetime(date_now.year + 1, self.birthday.value.month, self.birthday.value.day).date()
+            delta = (birthday_next_year - date_now).days
+            return f'\n{delta} days until the next birthday of {self.name}'
         
     def __str__(self) -> str:
-        print ('110', self.phones)
+        
         if self.phones == None:
-            return f"{self.name}; Unknown; {self.birthday}"
-        return f"{self.name}; {', '.join(str(p) for p in self.phones)}; {self.birthday}"
+            return f"{self.name}; Unknown; {self.birthday.value}"
+        return f"{self.name}; {', '.join(str(p) for p in self.phones)}; {self.birthday.value}"
 
 
 class AddressBook(UserDict):
@@ -125,10 +144,20 @@ class AddressBook(UserDict):
         return "\n".join(str(r) for r in self.data.values())
     
 if __name__ == '__main__':
+    #name = Name ('bill')
+    #birthday = Birthday('2000-12-15')
+    birthday = Birthday('2000-12-1')
+    #print (name)
+    print (birthday.value)
+    print (type(birthday.value))
+    print (str(birthday.value))
+    record = Record('bill', birthday = birthday )
+    print('153', record.birthday)
+    print(record.days_to_birthday())
 
             
-    phone_1 = Phone(None)
-    print ('125', phone_1)
+    # phone_1 = Phone(None)
+    # print ('125', phone_1)
 
     """    # Bill +380(67)333-43-54
     #     name_1 = Name('Bill')

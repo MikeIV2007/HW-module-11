@@ -34,10 +34,10 @@ def table_of_commands():
     table.add_column('BIRTHDAY', justify='center')
     table.add_column('DESCRIPTION', justify='left')
     table.add_row('hello', '-', '-', '-', 'Greeting')
-    table.add_row('add', 'Any name ', 'Phone number in any format', '-', 'Add new contact')
+    table.add_row('add', 'Any name ', 'Phone number must have 10 or 12 digits', '-', 'Add new contact')
     table.add_row('append', 'Existing name', 'Additional phone number', '-', 'Append phone number') 
     table.add_row('delete', 'Existing name', 'Phone to delete', '-', 'Delete phone number')
-    table.add_row('birthday', 'Existing name', '-', 'Birthday', 'Add birthday')
+    table.add_row('birthday', 'Existing name', '-', 'YYYY-MM-DD', 'Add birthday')
     table.add_row('days to birthday', 'Existing name', '-', '-', 'Sow days to birthday')
     table.add_row('phone', 'Existing name', '-', '-', 'Getting phone number')
     table.add_row('show all', '-', '-', '-', 'Getting all database')
@@ -107,32 +107,28 @@ def show_all_command(*args):
     table.add_column('Name', justify='left')
     table.add_column("Phone number", justify="left")
     table.add_column("Birthday", justify="left")
-    #table.add_column("", justify="left")
 
     if len(address_book.data) == 0:
         return '\nAddress Book is empty!'
     
     for name, record in address_book.data.items():
-        phones_str = ''
+ 
         user_name = record.name.value
         if record.birthday:
             user_birthday = record.birthday.value
         else:
             user_birthday = 'Unknown'
 
-        user_phones= record.phones
-        print ('112',user_phones)
-        print ('113',len(user_phones))
+        phones_str = 'Unknown'
         user_phones_list = []
-        #print (user_phones_list)
-        for phone in user_phones:
-            user_phones_list.append(phone.value)
-        phones_str = ' ,'.join(user_phones_list)
-        print ('119',phones_str)
-        # for item in user_phones_list:
-        #     phones_str += item.value + ', '
-
-        table.add_row(user_name, phones_str, user_birthday )
+        user_phones= record.phones
+        #print ('124', record.phones)
+        if record.phones != None:
+            for phone in user_phones:
+                user_phones_list.append(phone.value)
+            phones_str = ' ,'.join(user_phones_list) 
+        #print ("130", user_name, phones_str, user_birthday)   
+        table.add_row(str(user_name), str(phones_str), str(user_birthday) )
     return table
 
 
@@ -146,23 +142,29 @@ def hello_command(*args):
 def birthday_command(*args):
     if args[0] == '':
         return '\nMissing mame of contact!'
-    print ("145", args)
+
     name = Name(args[0])
     birthday = Birthday(args[1])
-    print ('148', birthday)
+    #birthday = Birthday(birthday.date)
+    if birthday.value == None:
+        return f'\nBirthday {args[1]} is not correct!'
     rec: Record = address_book.get(str(name))
-    print ('150', rec)
+
     if rec:
         return rec.add_birthday(birthday)
     rec = Record(name, birthday = birthday)
-    print ('155', rec)
     return address_book.add_record(rec)
 
 
 def days_to_birthday_command(*args):
-    ...
-    
 
+    if args[0] == '':
+        return '\nMissing mame of contact!'
+    for name, record in address_book.data.items():
+        if name == args[0]:
+            record: Record = record
+            return record.days_to_birthday()
+    
 
 COMMANDS = {
     add_command: ('add', 'append'),
@@ -173,7 +175,7 @@ COMMANDS = {
     help_command: ('help',),
     hello_command: ('hello',),
     birthday_command: ('birthday',),
-    days_to_birthday_command: ('days to birsday',)
+    days_to_birthday_command: ('days to birthday',)
 }
 
 def check_phone_number(command, phone):
@@ -242,7 +244,7 @@ def main():
         user_input = (input(f'\nEnter command, please!\n\n>>>')).strip()
         
         command, user_info = parser(user_input)
-        #print ("233", COMMANDS[command])
+
         if command == None:
             continue
         if len(user_info) > 0:
@@ -250,7 +252,6 @@ def main():
             if COMMANDS[command][0] == 'birthday':
                 name, birthday = get_user_name(user_info)
                 if len(birthday)>0:
-                    #name, birthday = birthday_command(user_info)
                     data = (name, birthday)
                 else:
                     birthday = None
@@ -259,7 +260,6 @@ def main():
             else:
                 name, phone = get_user_name(user_info)
                 if len (phone) > 0:
-                    #phone = check_phone_number(command, phone)
                     phone = phone
                     data = (name, phone)
                 else:
@@ -287,7 +287,9 @@ if __name__ == "__main__":
 # ADD Bill +380(67)333-43-54
 # Append Bill +380(67)333-11-11
 # add
-# BirthDaY Bill 2002-05-32
+# BirthDaY Bill 2002-05-32 #not correct
+# BirthDaY Bill 2002-05-30
+# Days To Birthday Bill
 # DeLete Bill +380(67)333-43-54
 # ADD Bill Jonson +380(67)333-43-5
 # Append Bill Jonson +380(67)333-99-88
