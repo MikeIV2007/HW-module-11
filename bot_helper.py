@@ -27,16 +27,16 @@ address_book = AddressBook()
 
 
 def table_of_commands():
-    table = Table(title='\nALL VALID COMMANDS:\n(All entered data must be devided by gap!)')
+    table = Table(title='\nALL VALID COMMANDS:\nAll entered data must be devided by gap!\n* Phone number must have 10 or 12 digits!')
     table.add_column('COMMAND', justify='left')
     table.add_column('NAME', justify='left')
-    table.add_column('PHONE NUMBER', justify='center')
+    table.add_column('PHONE NUMBER', justify='letf')
     table.add_column('BIRTHDAY', justify='center')
     table.add_column('DESCRIPTION', justify='left')
     table.add_row('hello', '-', '-', '-', 'Greeting')
-    table.add_row('add', 'Any name ', 'Phone number must have 10 or 12 digits', '-', 'Add new contact')
-    table.add_row('append', 'Existing name', 'Additional phone number', '-', 'Append phone number') 
-    table.add_row('delete', 'Existing name', 'Phone to delete', '-', 'Delete phone number')
+    table.add_row('add', 'Any name ', 'Phone number *', '-', 'Add new contact')
+    table.add_row('append', 'Existing name', 'Additional phone number *', '-', 'Append phone number') 
+    table.add_row('delete', 'Existing name', 'Phone to delete *', '-', 'Delete phone number')
     table.add_row('birthday', 'Existing name', '-', 'YYYY-MM-DD', 'Add birthday')
     table.add_row('days to birthday', 'Existing name', '-', '-', 'Sow days to birthday')
     table.add_row('phone', 'Existing name', '-', '-', 'Getting phone number')
@@ -68,6 +68,10 @@ def add_command(*args):
         return f'\nPhone number is missing!'
     
     phone = Phone(args[1])
+    
+    if phone.value == '':
+        return f'\nPhone number {args[1]} is hot correct!\nPhone must have 10 or 12 digites!'
+    
     rec: Record = address_book.get(str(name))
 
     if rec:
@@ -181,22 +185,6 @@ COMMANDS = {
     days_to_birthday_command: ('days to birthday',)
 }
 
-def check_phone_number(command, phone):
-    if command == 'phone':
-        return phone
-    if 18>= len(phone) >= 10:
-        for i in phone:
-            if i in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '(', ')', ' '):
-                continue
-            else:
-                return (f'Phone number {phone} is not correct')
-      
-        return phone
-    else:
-        print  (f'\nPhone number {phone} is not valid! It must be in range from 10 to 18 characters! Try againe!')
-        phone = ''
-        return phone
-
 
 def get_user_name(user_info: str )-> tuple:
 
@@ -287,8 +275,9 @@ if __name__ == "__main__":
 # help
 # phone
 # add Bill
-# ADD Bill +380(67)333-43-54
-# Append Bill +380(67)333-11-11
+# ADD Bill +380(67)333-43-5
+# ADD Bill +380673334354
+# Append Bill +380673331111
 # add
 # BirthDaY Bill 2002-05-32 #not correct
 # BirthDaY Bill 2002-05-30

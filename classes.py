@@ -1,6 +1,6 @@
 from collections import UserDict
 from datetime import datetime, timedelta
-from typing import Any
+from sanytize import sanitize_phone_number
 
 class Field:
     def __init__(self, value) -> None:
@@ -11,33 +11,32 @@ class Field:
     
     def __repr__(self) -> str:
         return str(self)
-    
-    # def __setattr__(self, __name: str, __value: Any) -> None:
-    #     pass
 
-    # def __getattribute__(self, __name: str) -> Any:
-    #     pass
-        
 
 class Name(Field):
     ...
     
 
 class Phone(Field):
-    ...
-    # def __init__(self, value, rooms=255):
-    #     self.__name = None
-    #     self.name = value
+    def __init__(self, value) -> None:
+        super().__init__(value)
+        self.__value= None
+        self.value = value
+   
+    @property
+    def value(self):
+        return self.__value
     
-    # @property
-    # def name(self):
-    #     return self.__name.upper()
-    
-    # @name.setter
-    # def name(self, value):
-    #     if not isinstance(value, str):
-    #         raise WrongHotelName("Name must be string")
-    #     self.__name = value
+    @value.setter
+    def value(self, value):
+
+        sanytized_ph = sanitize_phone_number(value)
+
+        if sanytized_ph == '':          
+            self.__value = ''
+            return self.__value
+        self.__value = sanytized_ph
+        return self.__value
 
 class Birthday(Field):
     def __init__(self, value) -> None:
@@ -58,12 +57,9 @@ class Birthday(Field):
             return self.__value
             
         except:
-            
             self.__value= None
             return self.__value
-            #return f'\nBirthday format {value} not correct!'
-            # self.__date = None
-            # return self.__date
+        
         
 class Record:
     
@@ -73,9 +69,6 @@ class Record:
             self.phones = phone
         else:
             self.phones = []
-            #if phone.value:
-            # if phone != None:
-            #     self.phones.append(phone)
             self.phones.append(phone)
         self.birthday = birthday
 
@@ -120,10 +113,10 @@ class Record:
             return f'\n{delta} days until the next birthday of {self.name}'
         
     def __str__(self) -> str:
-                
-        if self.phones == None and self.birthday == None:
+       
+        if (self.phones == None or self.phones == []) and self.birthday == None:
             return f"{self.name}; Unknown; Uncknown"
-        if self.phones == None:
+        if self.phones == None or self.phones == []:
             return f"{self.name}; Unknown; {self.birthday.value}"
         if self.birthday == None:
             return f"{self.name}; {', '.join(str(p) for p in self.phones)}; Unknown"
@@ -133,22 +126,31 @@ class Record:
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
-        return f"\nContact {record} added successfully!"
+        return f"\nContact <<< {record} >>> added successfully!"
 
     def __str__(self) -> str:
         return "\n".join(str(r) for r in self.data.values())
     
 if __name__ == '__main__':
-    #name = Name ('bill')
-    #birthday = Birthday('2000-12-15')
-    birthday = Birthday('2000-12-1')
-    #print (name)
-    print (birthday.value)
-    print (type(birthday.value))
-    print (str(birthday.value))
-    record = Record('bill', birthday = birthday )
-    print('153', record.birthday)
-    print(record.days_to_birthday())
+    name = Name ('bill')
+    #phone = "38050-111-22-22"
+    phone = "    +38(050)123323"
+    #phone = "     0503451234"
+    #phone = ' 1234567891111234'
+    phone = Phone(phone)
+    print (phone.value)
+
+
+
+    # #birthday = Birthday('2000-12-15')
+    # birthday = Birthday('2000-12-1')
+    # #print (name)
+    # print (birthday.value)
+    # print (type(birthday.value))
+    # print (str(birthday.value))
+    # record = Record('bill', birthday = birthday )
+    # print('153', record.birthday)
+    # print(record.days_to_birthday())
 
             
     # phone_1 = Phone(None)
