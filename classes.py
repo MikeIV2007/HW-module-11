@@ -2,6 +2,7 @@ from collections import UserDict
 from datetime import datetime, timedelta
 from sanytize import sanitize_phone_number
 
+
 class Field:
     def __init__(self, value) -> None:
         self.value = value
@@ -127,6 +128,37 @@ class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
         return f"\nContact <<< {record} >>> added successfully!"
+    
+    def iterator(self, n):
+
+        count = 0
+        data_list = []
+        for name, record in self.data.items():
+            user_data = []
+            user_name = name
+            if record.birthday:
+                user_birthday = record.birthday.value
+            else:
+                user_birthday = 'Unknown'
+
+            phones_str = 'Unknown'
+            user_phones_list = []
+            user_phones= record.phones
+            if record.phones != None:
+                for phone in user_phones:
+                    user_phones_list.append(phone.value)
+                phones_str = ' ,'.join(user_phones_list)
+            user_data = [user_name, phones_str, user_birthday]
+            data_list.append(user_data)
+            count += 1
+            if count >= n:
+
+                yield data_list
+                count = 0
+                data_list = []
+
+        if data_list:
+            yield data_list
 
     def __str__(self) -> str:
         return "\n".join(str(r) for r in self.data.values())

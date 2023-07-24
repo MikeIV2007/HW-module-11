@@ -1,21 +1,3 @@
-"""У цьому домашньому завданні ми:
-
-Додамо поле для дня народження Birthday. Це поле не обов'язкове, але може бути тільки одне. DONE
-Додамо функціонал роботи з Birthday у клас Record, а саме функцію days_to_birthday, яка повертає кількість днів до наступного дня народження.
-
-add birthday
-
-Додамо функціонал перевірки на правильність наведених значень для полів Phone, Birthday.
-Додамо пагінацію (посторінкове виведення) для AddressBook для ситуацій, коли книга дуже велика і потрібно показати вміст частинами, а не все одразу. Реалізуємо це через створення ітератора за записами.
-Критерії приймання:
-AddressBook реалізує метод iterator, який повертає генератор за записами AddressBook і за одну ітерацію повертає представлення для N записів.
-Клас Record приймає ще один додатковий (опціональний) аргумент класу Birthday
-Клас Record реалізує метод days_to_birthday, який повертає кількість днів до наступного дня народження контакту, якщо день народження заданий.
-setter та getter логіку для атрибутів value спадкоємців Field.
-Перевірку на коректність веденого номера телефону setter для value класу Phone.
-Перевірку на коректність веденого дня народження setter для value класу Birthday."""
-
-
 import re
 from rich import print
 from rich.table import Table
@@ -40,7 +22,7 @@ def table_of_commands():
     table.add_row('birthday', 'Existing name', '-', 'YYYY-MM-DD', 'Add birthday')
     table.add_row('days to birthday', 'Existing name', '-', '-', 'Sow days to birthday')
     table.add_row('phone', 'Existing name', '-', '-', 'Getting phone number')
-    table.add_row('show all', '-', '-', '-', 'Getting all database')
+    table.add_row('show all / show all N', '-', '-', '-', 'Getting Address Book/ N - quantity of records on th page')
     table.add_row('good bye / close / exit', '-', '-', '-', 'Exit')
     table.add_row('help', '-', '-', '-','Printing table of commands')
 
@@ -102,7 +84,7 @@ def phone_command(*args):
             if record.phones == []:
                 return (f'\nContact {name} doesn\'t have any phone!')
             phones = ", ".join(str(phone) for phone in record.phones)
-            return (f'\nPhone number(s) of {name} is: {phones}')
+            return (f'\nPhone number(s) of {name} is(are): {phones}')
     return f'\nContact {args[0]} not found in address book!'
 
 
@@ -112,31 +94,29 @@ def exit_command(*args):
 
 def show_all_command(*args):
 
-    table = Table(title='\nALL CONTACTS IN DATABASE')
-    table.add_column('Name', justify='left')
-    table.add_column("Phone number", justify="left")
-    table.add_column("Birthday", justify="left")
-
     if len(address_book.data) == 0:
         return '\nAddress Book is empty!'
     
-    for name, record in address_book.data.items():
- 
-        user_name = record.name.value
-        if record.birthday:
-            user_birthday = record.birthday.value
-        else:
-            user_birthday = 'Unknown'
+    n = 5
+    k = 1
 
-        phones_str = 'Unknown'
-        user_phones_list = []
-        user_phones= record.phones
-        if record.phones != None:
-            for phone in user_phones:
-                user_phones_list.append(phone.value)
-            phones_str = ' ,'.join(user_phones_list)   
-        table.add_row(str(user_name), str(phones_str), str(user_birthday) )
-    return table
+    try:
+        n = int(args[0])
+    except ValueError:
+        print (f'\nEnterd number of pages <<< {args[0]} >>> does not represent a valid integer!\nDefault number of records N = {n} will be used')
+
+    for block in address_book.iterator(n):
+        
+        table = Table(title=f'\nADDRESS BOOK page {k}')
+        table.add_column('Name', justify='left')
+        table.add_column("Phone number", justify="left")
+        table.add_column("Birthday", justify="left")
+        for item in block:
+            table.add_row(str(item[0]), str(item[1]), str(item[2]) )
+        print (table)
+        k += 1
+
+    return "\nEnd of address book"
 
 
 def help_command(*args):
@@ -225,10 +205,11 @@ def parser(text:str):
 
 
 def main():
-    # global I
-    # if I == 1:
-    #     print (table_of_commands())
-    #     I += 1
+
+    global I
+    if I == 1:
+        print (table_of_commands())
+        I += 1
 
     while True:
 
@@ -247,6 +228,9 @@ def main():
                 else:
                     birthday = None
                     data = (name, birthday)
+
+            elif COMMANDS[command][0] == 'show all':     
+                data = (user_info,)
 
             else:
                 name, phone = get_user_name(user_info)
@@ -270,7 +254,20 @@ def main():
 if __name__ == "__main__":
     main()
 
-# 
+# add Bill +380673334354
+# add Billy +380673331111
+# add Bill Jonson +380(67)333-99-88
+# add Bil +380673334354
+# add Bi +380673331111
+# add Bill Jonson +380(67)333-99-88
+# add Bill Jonso +380(67)333-99-88
+# add Bill Jons +380(67)333-99-88
+# add Bill Jon +380(67)333-99-88
+# add Bill Jo +380(67)333-99-88
+# add Bill J +380(67)333-99-88
+# add Mike Jonn +380(67)111-41-77
+# add Mike +380(67)111-41-77
+
 # show all
 # help
 # phone
