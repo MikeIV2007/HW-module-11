@@ -30,14 +30,10 @@ class Phone(Field):
     
     @value.setter
     def value(self, value):
-
         sanytized_ph = sanitize_phone_number(value)
-
-        if sanytized_ph == '':          
-            self.__value = ''
-            return self.__value
         self.__value = sanytized_ph
         return self.__value
+    
 
 class Birthday(Field):
     def __init__(self, value) -> None:
@@ -67,7 +63,7 @@ class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
         if phone == None:
-            self.phones = phone
+            self.phones = None
         else:
             self.phones = []
             self.phones.append(phone)
@@ -114,7 +110,7 @@ class Record:
             return f'\n{delta} days until the next birthday of {self.name}'
         
     def __str__(self) -> str:
-       
+        
         if (self.phones == None or self.phones == []) and self.birthday == None:
             return f"{self.name}; Unknown; Uncknown"
         if self.phones == None or self.phones == []:

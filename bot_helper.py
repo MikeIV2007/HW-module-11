@@ -51,7 +51,7 @@ def add_command(*args):
     
     phone = Phone(args[1])
     
-    if phone.value == '':
+    if phone.value == None:
         return f'\nPhone number {args[1]} is hot correct!\nPhone must have 10 or 12 digites!'
     
     rec: Record = address_book.get(str(name))
@@ -116,7 +116,7 @@ def show_all_command(*args):
         print (table)
         k += 1
 
-    return "\nEnd of address book"
+    return "\nEnd of address book."
 
 
 def help_command(*args):
@@ -235,7 +235,6 @@ def main():
             else:
                 name, phone = get_user_name(user_info)
                 if len (phone) > 0:
-                    phone = phone
                     data = (name, phone)
                 else:
                     phone = ''
@@ -272,7 +271,7 @@ if __name__ == "__main__":
 # help
 # phone
 # add Bill
-# ADD Bill +380(67)333-43-5
+# ADD Bill +380(67)333-43-5 # not correct
 # ADD Bill +380673334354
 # Append Bill +380673331111
 # add
